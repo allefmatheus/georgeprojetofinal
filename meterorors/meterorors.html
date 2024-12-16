@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meteoros infinitos</title>
+</head>
+<body>
+    <style type="text/css">
+        #game{
+            border: 1px solid black;
+background-image: url(https://pbs.twimg.com/media/Fwu808zXgAIVqGz.jpg);
+        }
+    </style>     
+    <h1>Meteoritos nervosos</h1>
+    <canvas id="game" width="800" height="600"> 
+
+    </canvas>
+    <script>
+        const canvas = document.getElementById("game");
+        const context = canvas.getContext("2d");
+
+        const tartinhaIMG = new Image();
+        tartinhaIMG.src = "https://p2.trrsf.com/image/fget/cf/1200/630/middle/images.terra.com/2023/03/13/virginia_base_wepink_rep-1ibjvdcwsva5y.jpg";
+
+        const tartinha = {
+           x:7660,
+           y:245-70,
+           width: 70,
+           height: 70,
+           speed: 5
+        }
+        function desenharTartinha() {
+        context.drawImage(tartinhaIMG, tartinha.x, tartinha.y, tartinha.width, tartinha.height);
+        }
+        playerImage.onload = () => {desenharTartinha();}
+
+    </script>
+</body>
+</html>

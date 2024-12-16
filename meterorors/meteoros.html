@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Jogo das Bolas</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #container-jogo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        #jogo {
+            border: 4px solid black;
+            background-image: url(https://pbs.twimg.com/media/Fwu808zXgAIVqGz.jpg);
+            background-size: cover;
+            margin-right: 20px;
+        }
+
+        iframe {
+            border: 4px solid black;
+        }
+
+        #botaoReiniciar {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        let player;
+        function aoCarregarAPIYouTube() {
+            player = new YT.Player('video', {
+                events: {
+                    'onReady': aoPronto
+                }
+            });
+        }
+
+        function aoPronto(evento) {
+            evento.target.playVideo();
+        }
+    </script>
+</head>
+<body>
+    <a href="https://www.youtube.com/watch?v=AGOrOlcxfEs"><h1>EU PEÇO RESPEITO COM A MINHA FAMILIA COM AS MINHA MARIA COM A MINHA VIRGINIA</h1></a>
+
+    <div id="container-jogo">
+        <canvas id="jogo" width="626" height="626"></canvas>
+        <div id="player-container">
+            <iframe id="video" width="560" height="315" src="https://www.youtube.com/embed/AGOrOlcxfEs?enablejsapi=1&start=14" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <button id="botaoReiniciar">Começar de novo</button>
+
+    <script>
+        const tela = document.getElementById("jogo");
+        const contexto = tela.getContext("2d");
+
+        const chosoIMG = new Image();
+        chosoIMG.src = 'https://web.portalsucesso.com.br/wp-content/uploads/2024/02/z%C3%A9-felipe-13-fev24.png';
+
+        const moscaIMG = new Image();
+        moscaIMG.src = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtUSOTlUsrnvceOvh9VHxqmJOQzGhedyxrFA&s';
+
+        const moscaBIMG = new Image();
+        moscaBIMG.src = 'https://i.scdn.co/image/ab6761610000e5eba3e55c461ac6628053005588';
+
+        const choso = {
+            x: 400,
+            y: 480,
+            largura: 100,
+            altura: 100,
+            velocidade: 8
+        };
+
+        const moscas = [];
+        const moscasB = [];
+        let fimDeJogo = false;
+        let colisoesB = 0;
+
+        function criarMosca() {
+            const mosca = {
+                x: Math.random() < 0.5 ? 0 : tela.width - 60,
+                y: Math.random() * (tela.height - 60),
+                largura: 60,
+                altura: 60,
+                velocidade: 2 + Math.random() * 2
+            };
+            moscas.push(mosca);
+        }
+
+        function criarMoscaB() {
+            const moscaB = {
+                x: Math.random() * (tela.width - 60),
+                y: Math.random() < 0.5 ? 0 : tela.height - 60,
+                largura: 60,
+                altura: 60,
+                velocidade: 3 + Math.random() * 2
+            };
+            moscasB.push(moscaB);
+        }
+
+        function desenharChoso() {
+            contexto.drawImage(chosoIMG, choso.x, choso.y, choso.largura, choso.altura);
+        }
+
+        function desenharMosca(mosca) {
+            contexto.drawImage(moscaIMG, mosca.x, mosca.y, mosca.largura, mosca.altura);
+        }
+
+        function desenharMoscaB(moscaB) {
+            contexto.drawImage(moscaBIMG, moscaB.x, moscaB.y, moscaB.largura, moscaB.altura);
+        }
+
+        function atualizarMoscas() {
+            moscas.forEach(mosca => {
+                mosca.x += mosca.velocidade;
+                mosca.y += mosca.velocidade * (Math.random() < 0.5 ? 1 : -1);
+            });
+            moscasB.forEach(moscaB => {
+                moscaB.x += moscaB.velocidade * (Math.random() < 0.5 ? 1 : -1);
+                moscaB.y += moscaB.velocidade;
+            });
+        }
+
+        function verificarColisao() {
+            for (let mosca of moscas) {
+                if (choso.x < mosca.x + mosca.largura &&
+                    choso.x + choso.largura > mosca.x &&
+                    choso.y < mosca.y + mosca.altura &&
+                    choso.y + choso.altura > mosca.y) {
+                    return 'A';
+                }
+            }
+            for (let moscaB of moscasB) {
+                if (choso.x < moscaB.x + moscaB.largura &&
+                    choso.x + choso.largura > moscaB.x &&
+                    choso.y < moscaB.y + moscaB.altura &&
+                    choso.y + choso.altura > moscaB.y) {
+                    colisoesB++;
+                    moscasB.splice(moscasB.indexOf(moscaB), 1);
+                    if (colisoesB >= 3) {
+                        return 'B';
+                    }
+                }
+            }
+            return false;
+        }
+
+        function loopDoJogo() {
+            if (fimDeJogo) {
+                contexto.clearRect(0, 0, tela.width, tela.height);
+                contexto.drawImage(moscaIMG, 0, 0, tela.width, tela.height);
+                contexto.font = "48px serif";
+                contexto.fillStyle = "red";
+                contexto.fillText("FELCA", tela.width / 2 - 120, tela.height / 2);
+                return;
+            }
+
+            contexto.clearRect(0, 0, tela.width, tela.height);
+            desenharChoso();
+            moscas.forEach(desenharMosca);
+            moscasB.forEach(desenharMoscaB);
+            atualizarMoscas();
+
+            const colisao = verificarColisao();
+            if (colisao) {
+                fimDeJogo = true;
+            }
+
+            requestAnimationFrame(loopDoJogo);
+        }
+
+        document.addEventListener('keydown', function(evento) {
+            switch (evento.key) {
+                case 'ArrowUp':
+                    if (!fimDeJogo) choso.y -= choso.velocidade;
+                    break;
+                case 'ArrowDown':
+                    if (!fimDeJogo) choso.y += choso.velocidade;
+                    break;
+                case 'ArrowLeft':
+                    if (!fimDeJogo) choso.x -= choso.velocidade;
+                    break;
+                case 'ArrowRight':
+                    if (!fimDeJogo) choso.x += choso.velocidade;
+                    break;
+                case 'Backspace':
+                    if (!fimDeJogo) {
+                        choso.largura = choso.largura === 100 ? 150 : 100;
+                        choso.altura = choso.altura === 100 ? 150 : 100;
+                    }
+                    break;
+                case 'Enter':
+                    location.reload();
+                    break;
+            }
+
+            choso.x = Math.max(0, Math.min(tela.width - choso.largura, choso.x));
+            choso.y = Math.max(0, Math.min(tela.height - choso.altura, choso.y));
+        });
+
+        document.getElementById("botaoReiniciar").addEventListener("click", function() {
+            location.reload();
+        });
+
+        chosoIMG.onload = () => {
+            setInterval(criarMosca, 1000);
+            setInterval(criarMoscaB, 1500);
+            loopDoJogo();
+        };
+    </script>
+</body>
+</html>
